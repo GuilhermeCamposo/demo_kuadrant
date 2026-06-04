@@ -1,0 +1,4 @@
+.vscode
+.camel-jbang
+.ansible
+export-variables.sh

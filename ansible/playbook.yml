@@ -1,0 +1,67 @@
+- name: Install Kuadrant
+  hosts: localhost
+  vars:
+    verify_tls: false
+    insecure_skip_tls_verify: true
+    keycloak_project: keycloak-system
+# S3 Configuration
+    aws_region: us-east-2
+# Developer Hub Configuration
+    rhdh_project: rhdh
+    rhdh_keycloak_realm: rhdh
+    rhdh_keycloak_client_id: rhdh
+    rhdh_keycloak_client_secret: 9IAuKgbRcEUTU4mjeUUTY25P6IKo0B6L
+
+  tasks:
+    - name: Check Required Parameters
+      ansible.builtin.fail:
+        msg: "This play requires 'server' and 'token' to be defined"
+      when:
+        - (server is not defined) or (token is not defined) or (server is none) or (token is none)
+      ignore_errors: false
+      tags: [keycloak, tekton, argocd, rhdh, devspaces]
+
+    - name: Set domain
+      ansible.builtin.set_fact:
+        domain: "{{ server | regex_replace('https://api.') | regex_replace(':6443') }}"
+      tags: [keycloak, tekton, argocd, rhdh, devspaces]
+
+    - name: Set Subdomain
+      ansible.builtin.set_fact:
+        route_subdomain: "apps.{{ domain }}"
+      tags: [keycloak, tekton, argocd, rhdh, devspaces]
+
+    - name: Include Keycloak
+      ansible.builtin.include_role:
+        name: keycloak
+        apply:
+          tags: [keycloak, rhdh]
+      tags: [keycloak, rhdh]
+
+    - name: Include Tekton
+      ansible.builtin.include_role:
+        name: tekton
+        apply:
+          tags: [tekton, rhdh]
+      tags: [tekton, rhdh]
+
+    - name: Include ArgoCD
+      ansible.builtin.include_role:
+        name: argocd
+        apply:
+          tags: [argocd, rhdh]
+      tags: [argocd, rhdh]
+
+    - name: Include RHDH
+      ansible.builtin.include_role:
+        name: rhdh
+        apply:
+          tags: rhdh
+      tags: rhdh
+
+    - name: Include Kuadrant
+      ansible.builtin.include_role:
+        name: kuadrant
+        apply:
+          tags: kuadrant
+      tags: kuadrant

@@ -1,0 +1,23 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: hello-openshift-route
+spec:
+  hostnames:
+    - hello.{{ kuadrant_sub_domain }}.{{ kuadrant_zone_root_domain }}
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: ingress-gateway
+      namespace: kuadrant-system
+  rules:
+    - backendRefs:
+        - group: ''
+          kind: Service
+          name: hello-openshift
+          port: 8080
+          weight: 1
+      matches:
+        - path:
+            type: PathPrefix
+            value: /

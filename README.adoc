@@ -1,0 +1,46 @@
+= Kuadrant Demo
+
+== Requirements
+
+- OCP >= 4.20
+- oc client >= 4.20
+- Ansible with Kubernetes module (https://docs.ansible.com/ansible/latest/collections/kubernetes/core/k8s_module.html#requirements[requirements])
+
+== What is available?
+
+. Developer Hub 1.9
+. Red Hat build of Keycloak v26
+. Tekton Pipelines 1.21
+. ArgoCD GitOps 1.19
+. Red Hat Connectivity Link 1.3
+
+== ADS Installation
+
+=== Parameters
+
+[options="header"]
+|=======================
+| Parameter  | Example Value                                      | Definition                                             | Required?
+| token      | sha256~vFanQbthlPKfsaldJT3bdLXIyEkd7ypO_XPygY1DNtQ | access token for a user with cluster-admin privileges  |  YES
+| server     | https://api.mycluster.domain.com:6443              | OpenShift cluster API URL                              |  YES 
+| rhdh_github_pat | longString                                         | Personal Access Token used to download and publish content on Github. | *Required for Developer Hub* deployment only. For information regarding scope, refer to the https://backstage.io/docs/integrations/github/locations[docs]
+| kuadrant_aws_access_key_id    | longStringOfCharacters | AWS EC2 Access Key. | *Required for Kuadrant* Only
+| kuadrant_aws_secret_key    | longStringOfCharacters | AWS EC2 Secret Key. | *Required for Kuadrant* Only
+| kuadrant_aws_region        | us-east-1              | AWS EC2 Region.     | *Required for Kuadrant* Only
+| kuadrant_zone_root_domain | example.com | The root domain to be used for the Kuadrant installation. This domain will be used to create the necessary DNS records for the Kuadrant Gateway. | *Required for Kuadrant* Only
+|=======================
+
+===  How to run the playbook
+
+----
+ansible-playbook \
+-e token=${token} \
+-e server=${server} \
+-e kuadrant_aws_access_key_id=${kuadrant_aws_access_key_id} \
+-e kuadrant_aws_secret_access_key=${kuadrant_aws_secret_access_key} \
+-e kuadrant_aws_region=${kuadrant_aws_region} \
+-e kuadrant_zone_root_domain=${kuadrant_zone_root_domain} \
+-e rhdh_github_pat=${github_pat} \
+playbook.yml
+----
+

@@ -1,0 +1,81 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: rbac-policies
+data:
+  rbac-policies.csv: |-
+    p, role:default/admin, policy.entity.read, read, allow
+    p, role:default/admin, policy.entity.create, create, allow
+    p, role:default/admin, policy.entity.delete, delete, allow
+    p, role:default/admin, policy.entity.update, update, allow
+    p, role:default/admin, catalog.entity.read, read, allow
+    p, role:default/admin, adoption-insights.events.read, read, allow
+    p, role:default/dev, catalog.entity.read, read, allow
+    p, role:default/dev, catalog.entity.create, create, allow
+    p, role:default/dev, catalog.entity.delete, delete, allow
+    p, role:default/dev, catalog.entity.refresh, update, allow
+    p, role:default/dev, catalog.entity.validate, use, allow
+    p, role:default/dev, catalog.location.read, read, allow
+    p, role:default/dev, catalog.location.create, create, allow
+    p, role:default/dev, catalog.location.delete, delete, allow
+    p, role:default/dev, catalog.location.analyze, use, allow
+    p, role:default/dev, scaffolder.template.parameter.read, read, allow
+    p, role:default/dev, scaffolder.template.step.read, read, allow
+    p, role:default/dev, scaffolder.action.execute, use, allow
+    p, role:default/dev, scaffolder.task.cancel, use, allow
+    p, role:default/dev, scaffolder.task.create, create, allow
+    p, role:default/dev, scaffolder.task.read, read, allow
+    p, role:default/dev, scaffolder.template.management, use, allow
+    p, role:default/dev, argocd.view.read, read, allow
+    p, role:default/dev, kubernetes.resources.read, read, allow
+    p, role:default/dev, kubernetes.clusters.read, read, allow
+    p, role:default/dev, adoption-insights.events.read, read, allow
+ 
+    # api consumer: browses apis, requests access
+    p, role:default/api-consumer, kuadrant.apiproduct.read.all, read, allow
+    p, role:default/api-consumer, kuadrant.apiproduct.list, read, allow
+    p, role:default/api-consumer, kuadrant.apikey.create, create, allow, apiproduct:*/*
+    p, role:default/api-consumer, kuadrant.apikey.read.own, read, allow
+    p, role:default/api-consumer, kuadrant.apikey.update.own, update, allow
+    p, role:default/api-consumer, kuadrant.apikey.delete.own, delete, allow
+    p, role:default/api-consumer, catalog.entity.read, read, allow
+
+    # api owner: publishes apis they own, approves requests for their apis
+    p, role:default/api-owner, kuadrant.planpolicy.read, read, allow
+    p, role:default/api-owner, kuadrant.planpolicy.list, read, allow
+    p, role:default/api-owner, kuadrant.apiproduct.create, create, allow
+    p, role:default/api-owner, kuadrant.apiproduct.read.all, read, allow
+    p, role:default/api-owner, kuadrant.apiproduct.update.own, update, allow
+    p, role:default/api-owner, kuadrant.apiproduct.delete.own, delete, allow
+    p, role:default/api-owner, kuadrant.apiproduct.list, read, allow
+    p, role:default/api-owner, kuadrant.apikey.create, create, allow, apiproduct:*/*
+    p, role:default/api-owner, kuadrant.apikey.read.own, read, allow
+    p, role:default/api-owner, kuadrant.apikey.update.own, update, allow
+    p, role:default/api-owner, kuadrant.apikey.delete.own, delete, allow
+    p, role:default/api-owner, kuadrant.apikey.approve, update, allow
+    p, role:default/api-owner, catalog.entity.read, read, allow
+
+    # api admin: platform engineers who manage all api products
+    p, role:default/api-admin, kuadrant.planpolicy.read, read, allow
+    p, role:default/api-admin, kuadrant.planpolicy.list, read, allow
+    p, role:default/api-admin, kuadrant.apiproduct.create, create, allow
+    p, role:default/api-admin, kuadrant.apiproduct.read.all, read, allow
+    p, role:default/api-admin, kuadrant.apiproduct.update.all, update, allow
+    p, role:default/api-admin, kuadrant.apiproduct.delete.all, delete, allow
+    p, role:default/api-admin, kuadrant.apiproduct.list, read, allow
+    p, role:default/api-admin, kuadrant.apikey.create, create, allow, apiproduct:*/*
+    p, role:default/api-admin, kuadrant.apikey.read.all, read, allow
+    p, role:default/api-admin, kuadrant.apikey.update.all, update, allow
+    p, role:default/api-admin, kuadrant.apikey.delete.all, delete, allow
+    p, role:default/api-admin, kuadrant.apikey.approve, update, allow
+    p, role:default/api-admin, catalog.entity.read, read, allow
+
+    # assign groups to roles
+    g, group:default/rhdh-admins, role:default/admin
+    g, group:default/rhdh-devs, role:default/dev
+    g, group:default/rhdh-devs, role:default/api-consumer
+    g, group:default/rhdh-devs, role:default/api-owner
+    g, group:default/rhdh-admins, role:default/api-admin
+
+
+  

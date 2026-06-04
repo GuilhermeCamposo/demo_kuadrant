@@ -1,0 +1,102 @@
+- name: Evaluate Kuadrant CR
+  kubernetes.core.k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    state: present
+    namespace: kuadrant-system
+    resource_definition: "{{ lookup('file', 'kuadrant.yml') }}"
+
+- name: Evaluate Certificate Issuer
+  kubernetes.core.k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    state: present
+    resource_definition: "{{ lookup('file', 'cluster-issuer.yml') }}"
+
+- name: Evaluate DNS Secret
+  kubernetes.core.k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    state: present
+    namespace: kuadrant-system
+    resource_definition: "{{ lookup('template', 'dns-secret.yml.j2') }}"
+
+- name: Evaluate Gateway
+  kubernetes.core.k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    state: present
+    namespace: kuadrant-system
+    resource_definition: "{{ lookup('template', 'gateway.yml.j2') }}"
+
+- name: Evaluate TLSPolicy
+  kubernetes.core.k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    state: present
+    namespace: kuadrant-system
+    resource_definition: "{{ lookup('file', 'tls-policy.yml') }}"
+
+- name: Evaluate DNSPolicy
+  kubernetes.core.k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    state: present
+    namespace: kuadrant-system
+    resource_definition: "{{ lookup('file', 'dns-policy.yml') }}"
+
+
+# Example Application
+- name: Deploy Example Application
+  block:
+    - name: Evaluate hello-openshift ns
+      kubernetes.core.k8s:
+        api_key: '{{ token }}'
+        host: '{{ server }}'
+        validate_certs: false
+        api_version: v1
+        kind: Namespace
+        name: hello-openshift
+        state: present
+
+    - name: Evaluate hello-openshift app
+      kubernetes.core.k8s:
+        api_key: '{{ token }}'
+        host: '{{ server }}'
+        validate_certs: false
+        state: present
+        namespace: hello-openshift
+        resource_definition: "{{ lookup('file', 'hello-app.yml') }}"
+
+    - name: Evaluate hello-openshift HttpRoute
+      kubernetes.core.k8s:
+        api_key: '{{ token }}'
+        host: '{{ server }}'
+        validate_certs: false
+        state: present
+        namespace: hello-openshift
+        resource_definition: "{{ lookup('template', 'hello-app-httproute.yml.j2') }}"
+
+- name: Patch Console Plugin
+  ignore_errors: false
+  when:
+    - token is defined
+    - token is not none
+    - token|trim() != ""
+  block:
+    - name: Log in with token on OpenShift
+      ansible.builtin.command: "oc login --token={{ token }}  --server={{ server }} --insecure-skip-tls-verify={{ insecure_skip_tls_verify }}"
+      register: kuadrant_login
+      changed_when: kuadrant_login.rc != 0
+
+    - name: Patch Console Config
+      ansible.builtin.command: >-
+        oc patch console.operator.openshift.io cluster --type=json -p '[{"op": "add", "path": "/spec/plugins", "value": ["kuadrant-console-plugin"]}]'
+      register: kuadrant_patch
+      changed_when: kuadrant_patch.rc != 0

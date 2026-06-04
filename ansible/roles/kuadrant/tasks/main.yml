@@ -1,0 +1,5 @@
+- name: Install Kuadrant
+  ansible.builtin.include_tasks: installation.yml
+
+- name: Configure Kuadrant
+  ansible.builtin.include_tasks: configuration.yml

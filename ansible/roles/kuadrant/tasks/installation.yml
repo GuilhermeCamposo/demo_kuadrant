@@ -1,0 +1,82 @@
+# Enable Gateway API on OCP > 4.19
+- name: Evaluate GatewayClass
+  kubernetes.core.k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    state: present
+    namespace: kuadrant-system
+    resource_definition: "{{ lookup('file', 'openshift-default.yml') }}"
+
+- name: Wait for IstioD Controller
+  kubernetes.core.k8s_info:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    api_version: v1
+    kind: Pod
+    namespace: 'openshift-ingress'
+    label_selectors:
+      - app = istiod
+    field_selectors:
+      - status.phase=Running
+  register: kuadrant_istiod_pod
+  retries: 20
+  delay: 10
+  until: kuadrant_istiod_pod.resources | list | length == 1
+
+- name: Evaluate Namespace kuadrant-system
+  kubernetes.core.k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    api_version: v1
+    kind: Namespace
+    name: kuadrant-system
+    state: present
+
+- name: Evaluate OperatorGroup kuadrant-operator
+  kubernetes.core.k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    api_version: operators.coreos.com/v1
+    kind: OperatorGroup
+    definition:
+      metadata:
+        name: 'kuadrant-operator-group'
+        namespace: 'kuadrant-system'
+      spec:
+        upgradeStrategy: Default
+
+- name: Check RHCL Subscription
+  kubernetes.core.k8s:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: false
+    state: present
+    kind: Subscription
+    api_version: operators.coreos.com/v1alpha1
+    definition:
+      metadata:
+        name: rhcl-operator
+        namespace: kuadrant-system
+      spec:
+        channel: stable
+        installPlanApproval: Automatic
+        name: rhcl-operator
+        source: redhat-operators
+        sourceNamespace: openshift-marketplace
+
+- name: Wait for Kuadrant CRD Installation
+  kubernetes.core.k8s_info:
+    api_key: '{{ token }}'
+    host: '{{ server }}'
+    validate_certs: '{{ verify_tls }}'
+    api_version: apiextensions.k8s.io/v1
+    kind: CustomResourceDefinition
+    name: kuadrants.kuadrant.io
+  register: kuadrant_crd
+  until: kuadrant_crd.resources | list | length == 1
+  retries: 10
+  delay: 30

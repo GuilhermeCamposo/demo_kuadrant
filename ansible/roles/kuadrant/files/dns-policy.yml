@@ -1,0 +1,19 @@
+apiVersion: kuadrant.io/v1
+kind: DNSPolicy
+metadata:
+  name: ingress-gateway-dnspolicy
+spec:
+  healthCheck:
+    failureThreshold: 3
+    interval: 1m
+    path: /health
+  loadBalancing:
+    defaultGeo: true
+    geo: GEO-NA
+    weight: 120
+  targetRef:
+    name: ingress-gateway
+    group: gateway.networking.k8s.io
+    kind: Gateway
+  providerRefs:
+  - name: aws-credentials
