@@ -1,4 +1,4 @@
-apiVersion: k8s.keycloak.org/v2alpha1
+apiVersion: k8s.keycloak.org/v2beta1
 kind: KeycloakRealmImport
 metadata:
   labels:
@@ -394,16 +394,16 @@ spec:
     webAuthnPolicyPasswordlessAcceptableAaguids: []
     webAuthnPolicyPasswordlessExtraOrigins: []
     users:
-      - username: {{ keycloak_user_username }}
+      - username: {{ keycloak_admin_username }}
         firstName: Admin
         lastName: Tester
-        email: {{ keycloak_user_username }}@demo.com
+        email: {{ keycloak_admin_username }}@demo.com
         emailVerified: true
         enabled: true
         credentials:
           - type: password
             userLabel: My Password
-            value: {{ keycloak_user_password }}
+            value: {{ keycloak_admin_password }}
             temporary: false
         totp: false
         disableableCredentialTypes: []
@@ -426,7 +426,7 @@ spec:
         credentials:
           - type: password
             userLabel: My Password
-            value: developer
+            value: {{ keycloak_dev_password }}
             temporary: false
         totp: false
         disableableCredentialTypes: []

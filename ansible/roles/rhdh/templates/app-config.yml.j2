@@ -7,9 +7,7 @@ data:
     app:
       baseUrl: https://backstage-developer-hub-{{ rhdh_project }}.{{ route_subdomain }}
     backend:
-      auth:
-        keys:
-          - secret: ${BACKEND_SECRET}      
+      auth:   
         externalAccess:
           - type: static
             options:
@@ -45,11 +43,11 @@ data:
     catalog:
       locations:
 {% for _rhdh_template_urls in rhdh_template_urls %}      
-      - rules:
-        - allow:
-          - Template
-        target: {{ _rhdh_template_urls }}
-        type: url
+        - rules:
+          - allow:
+            - Template
+          target: {{ _rhdh_template_urls }}
+          type: url
 {% endfor %}             
       providers:
         keycloakOrg:
@@ -111,5 +109,3 @@ data:
       keycloak: true
       kubernetes: true
       techdocs: false
-
-             
