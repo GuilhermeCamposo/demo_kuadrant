@@ -83,20 +83,20 @@
         namespace: hello-openshift
         resource_definition: "{{ lookup('template', 'hello-app-httproute.yml.j2') }}"
 
-- name: Patch Console Plugin
-  ignore_errors: false
-  when:
-    - token is defined
-    - token is not none
-    - token|trim() != ""
-  block:
-    - name: Log in with token on OpenShift
-      ansible.builtin.command: "oc login --token={{ token }}  --server={{ server }} --insecure-skip-tls-verify={{ insecure_skip_tls_verify }}"
-      register: kuadrant_login
-      changed_when: kuadrant_login.rc != 0
+# - name: Patch Console Plugin
+#   ignore_errors: false
+#   when:
+#     - token is defined
+#     - token is not none
+#     - token|trim() != ""
+#   block:
+#     - name: Log in with token on OpenShift
+#       ansible.builtin.command: "oc login --token={{ token }}  --server={{ server }} --insecure-skip-tls-verify={{ insecure_skip_tls_verify }}"
+#       register: kuadrant_login
+#       changed_when: kuadrant_login.rc != 0
 
-    - name: Patch Console Config
-      ansible.builtin.command: >-
-        oc patch console.operator.openshift.io cluster --type=json -p '[{"op": "add", "path": "/spec/plugins", "value": ["kuadrant-console-plugin"]}]'
-      register: kuadrant_patch
-      changed_when: kuadrant_patch.rc != 0
+#     - name: Patch Console Config
+#       ansible.builtin.command: >-
+#         oc patch console.operator.openshift.io cluster --type=json -p '[{"op": "add", "path": "/spec/plugins", "value": ["kuadrant-console-plugin"]}]'
+#       register: kuadrant_patch
+#       changed_when: kuadrant_patch.rc != 0

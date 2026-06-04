@@ -65,3 +65,10 @@
         apply:
           tags: kuadrant
       tags: kuadrant
+
+    - name: Include Grafana
+      ansible.builtin.include_role:
+        name: grafana
+        apply:
+          tags: grafana
+      tags: grafana
