@@ -77,7 +77,7 @@
     - token|trim() != ""
   ignore_errors: false
   block:
-    - name: Log in as super user with token on OpenShift 4
+    - name: Log in with token on OpenShift
       ansible.builtin.command: "oc login --token={{ token }}  --server={{ server }} --insecure-skip-tls-verify={{ insecure_skip_tls_verify }}"
       register: rhdh_login
       changed_when: rhdh_login.rc != 0

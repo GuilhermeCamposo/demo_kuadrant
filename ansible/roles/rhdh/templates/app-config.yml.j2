@@ -42,12 +42,12 @@ data:
     signInPage: oidc
     catalog:
       locations:
-{% for _rhdh_template_urls in rhdh_template_urls %}      
-        - rules:
-          - allow:
-            - Template
-          target: {{ _rhdh_template_urls }}
-          type: url
+{% for _rhdh_template_urls in rhdh_template_urls %}
+       - target: {{ _rhdh_template_urls }}
+         type: url
+         rules:
+           - allow: 
+              - Template        
 {% endfor %}             
       providers:
         keycloakOrg:
@@ -95,6 +95,27 @@ data:
         - apiVersion: v1
           group: route.openshift.io
           plural: routes
+        - apiVersion: v1
+          group: kuadrant.io
+          plural: authpolicies
+        - apiVersion: v1
+          group: kuadrant.io
+          plural: ratelimitpolicies  
+        - apiVersion: v1
+          group: kuadrant.io
+          plural: dnspolicies
+        - apiVersion: v1
+          group: kuadrant.io
+          plural: tlspolicies
+        - apiVersion: v1
+          group: kuadrant.io
+          plural: planpolicies   
+        - apiVersion: v1
+          group: kuadrant.io
+          plural: apiproducts   
+        - apiVersion: v1
+          group: kuadrant.io
+          plural: apikeys                                             
       serviceLocatorMethod:
         type: multiTenant
     permission:
