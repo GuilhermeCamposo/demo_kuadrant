@@ -1,0 +1,28 @@
+apiVersion: extensions.kuadrant.io/v1alpha1
+kind: PlanPolicy
+metadata:
+  name: tiers-{{ app_name }}
+spec:
+  # Reference to an existing networking resource to attach the policy to
+  # Can target Gateway, HTTPRoute, or GRPCRoute resources
+  # Must be in the same namespace as the PlanPolicy
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute  # or GRPCRoute or Gateway
+    name: {{ app_name }}-route
+
+  # List of plans ordered by priority (first match wins)
+  plans:
+    - tier: free
+      predicate: |
+        has(auth.identity) && auth.identity.metadata.annotations["secret.kuadrant.io/plan-id"] == "free"
+      limits:
+        custom:
+          - limit: 4
+            window: "60s"        
+    - tier: paid
+      predicate: |
+        has(auth.identity) && auth.identity.metadata.annotations["secret.kuadrant.io/plan-id"] == "paid"
+      limits:
+        daily: 500
+        weekly: 2000
