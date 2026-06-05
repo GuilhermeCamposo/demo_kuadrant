@@ -1,0 +1,17 @@
+apiVersion: kuadrant.io/v1
+kind: RateLimitPolicy
+metadata:
+  name: basic-test
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: {{ app_name }}-route
+    # sectionName: create-toy
+  limits:
+    "basic-test":
+      rates:
+      - limit: 3
+        window: 60s
+      # when:
+      # - predicate: "request.method == 'GET'"

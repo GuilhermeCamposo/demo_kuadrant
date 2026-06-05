@@ -44,3 +44,33 @@ ansible-playbook \
 playbook.yml
 ----
 
+== Testing the Example Application
+
+The testing application comes with some basic scenarios to test the API Gateway functionality. You can use the following curl commands to test the application.
+
+First, get the URL of the application:
+----
+APP_ROUTE=https://$(oc get httproute hello-openshift-route -n hello-openshift -o jsonpath='{.spec.hostnames[0]}')
+----
+
+=== Authorization and Authentication
+
+. 403 error
+----
+curl -k -v $APP_ROUTE
+----
+
+. 200 success
+----
+curl -k -v -H 'Authorization: APIKEY iamanadmin' $APP_ROUTE
+----
+
+=== Rate Limiting
+
+. 429 error
+----
+for i in {1..6}; do
+  curl -k -H 'Authorization: APIKEY iamanadmin' "$APP_ROUTE"
+  echo
+done
+----

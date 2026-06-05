@@ -11,6 +11,7 @@
     rhdh_keycloak_realm: rhdh
     rhdh_keycloak_client_id: rhdh
     rhdh_keycloak_client_secret: 9IAuKgbRcEUTU4mjeUUTY25P6IKo0B6L
+    kuadrant_sub_domain: rhcl
 
   tasks:
     - name: Check Required Parameters
@@ -72,3 +73,10 @@
         apply:
           tags: grafana
       tags: grafana
+
+    - name: Include App
+      ansible.builtin.include_role:
+        name: app
+        apply:
+          tags: app
+      tags: app

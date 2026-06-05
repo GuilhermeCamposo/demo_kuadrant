@@ -1,0 +1,27 @@
+apiVersion: kuadrant.io/v1
+kind: AuthPolicy
+metadata:
+  name: authz-{{ app_name }}
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: {{ app_name }}-route
+  rules:
+    authorization:
+      "only-admins":
+        opa:
+          rego: |
+            groups := split(object.get(input.auth.identity.metadata.annotations, "kuadrant.io/groups", ""), ",")
+            allow { groups[_] == "admins" }
+    response:
+      unauthorized:
+        headers:
+          "content-type":
+            value: application/json
+        body:
+          value: |
+            {
+              "error": "Forbidden",
+              "message": "Invalid API key."
+            }
