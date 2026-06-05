@@ -54,6 +54,9 @@ data:
     p, role:default/api-owner, kuadrant.apikey.delete.own, delete, allow
     p, role:default/api-owner, kuadrant.apikey.approve, update, allow
     p, role:default/api-owner, catalog.entity.read, read, allow
+    p, role:default/api-owner, kuadrant.httproute.list, read, allow
+    p, role:default/api-owner, kuadrant.ratelimitpolicy.list, read, allow
+    p, role:default/api-owner, kuadrant.authpolicy.list, read, allow
 
     # api admin: platform engineers who manage all api products
     p, role:default/api-admin, kuadrant.planpolicy.read, read, allow
