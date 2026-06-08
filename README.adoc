@@ -53,6 +53,11 @@ First, get the URL of the application:
 APP_ROUTE=https://$(oc get httproute hello-openshift-route -n hello-openshift -o jsonpath='{.spec.hostnames[0]}')
 ----
 
+[NOTE]
+====
+You will also need an API key to test the authentication and authorization policies. Use the *dev1* user to create an API key in Backstage.
+====
+
 === Authorization and Authentication
 
 . 403 error
@@ -62,7 +67,7 @@ curl -k -v $APP_ROUTE
 
 . 200 success
 ----
-curl -k -v -H 'Authorization: APIKEY iamanadmin' $APP_ROUTE
+curl -k -v -H 'Authorization: APIKEY $API_KEY' $APP_ROUTE
 ----
 
 === Rate Limiting
@@ -70,7 +75,7 @@ curl -k -v -H 'Authorization: APIKEY iamanadmin' $APP_ROUTE
 . 429 error
 ----
 for i in {1..6}; do
-  curl -k -H 'Authorization: APIKEY iamanadmin' "$APP_ROUTE"
+  curl -k -H 'Authorization: APIKEY $API_KEY' "$APP_ROUTE"
   echo
 done
 ----

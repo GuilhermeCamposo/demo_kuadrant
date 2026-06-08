@@ -26,16 +26,16 @@
     namespace: '{{ app_ns }}'
     resource_definition: "{{ lookup('template', 'hello-app-httproute.yml.j2') }}"
 
-- name: Check Keys
-  kubernetes.core.k8s:
-    api_key: '{{ token }}'
-    host: '{{ server }}'
-    validate_certs: false
-    state: present
-    namespace: 'kuadrant-system'
-    resource_definition: "{{ lookup('template', item) }}"
-  loop:
-    - user-secret.yml.j2
+# - name: Check Keys
+#   kubernetes.core.k8s:
+#     api_key: '{{ token }}'
+#     host: '{{ server }}'
+#     validate_certs: false
+#     state: present
+#     namespace: 'kuadrant-system'
+#     resource_definition: "{{ lookup('template', item) }}"
+#   loop:
+#     - user-secret.yml.j2
 
 - name: Check Policies
   kubernetes.core.k8s:
@@ -46,7 +46,7 @@
     namespace: '{{ app_ns }}'
     resource_definition: "{{ lookup('template', item) }}"
   loop:
-    - rate-limit-policy.yml.j2
+    # - rate-limit-policy.yml.j2
     - authn-policy.yml.j2
     - authz-policy.yml.j2
-    # - plan-policy.yml.j2
+    - plan-policy.yml.j2

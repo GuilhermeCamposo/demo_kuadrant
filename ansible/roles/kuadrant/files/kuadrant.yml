@@ -2,6 +2,9 @@ apiVersion: kuadrant.io/v1beta1
 kind: Kuadrant
 metadata:
   name: kuadrant
-spec: 
+spec:
+  components:
+    developerPortal:
+      enabled: true 
   observability:
     enable: true

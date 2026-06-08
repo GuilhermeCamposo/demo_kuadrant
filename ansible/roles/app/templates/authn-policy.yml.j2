@@ -16,7 +16,7 @@ spec:
             allNamespaces: true
             selector:
               matchLabels:
-                app: {{ app_name }}
+                authorino.kuadrant.io/managed-by: authorino
           credentials:
             authorizationHeader:
               prefix: APIKEY
