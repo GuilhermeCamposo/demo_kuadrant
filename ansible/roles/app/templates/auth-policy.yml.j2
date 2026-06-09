@@ -1,0 +1,49 @@
+apiVersion: kuadrant.io/v1
+kind: AuthPolicy
+metadata:
+  name: auth-{{ app_name }}
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: {{ app_name }}-route
+  defaults:
+    strategy: merge
+    rules:
+      authentication:
+        "api-key-authn":
+          apiKey:
+            allNamespaces: true
+            selector:
+              matchLabels:
+                authorino.kuadrant.io/managed-by: authorino
+          credentials:
+            authorizationHeader:
+              prefix: APIKEY
+      authorization:
+        "plans":
+          opa:
+            rego: |
+              labs := split(object.get(input.auth.identity.metadata.annotations, "secret.kuadrant.io/plan-id", ""), ",")
+              allow { count(labs) > 0  }             
+      response:
+        unauthorized:
+          headers:
+            "content-type":
+              value: application/json
+          body:
+            value: |
+              {
+                "error": "Forbidden",
+                "message": "This key is not authorized."
+              }
+        unauthenticated:
+          headers:
+            "content-type":
+              value: application/json
+          body:
+            value: |
+              {
+                "error": "Forbidden",
+                "message": "The APIKey is not valid."
+              }              
